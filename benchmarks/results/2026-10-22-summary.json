@@ -1,0 +1,1529 @@
+{
+  "schema_version": 1,
+  "suite": "public-30-2026-09-09",
+  "model": "gpt-6.1-sol",
+  "protocol": "chat_completions",
+  "temperature": 0,
+  "max_tokens": 8192,
+  "context_size": 128000,
+  "agent_timeout_seconds": 900,
+  "finalization_reserve_seconds_after": 60,
+  "sampling_seed": null,
+  "completed_at": "2026-10-22T08:01:48.006306+08:00",
+  "manifest_sha256": "1cacf4cd77ba77c99c1a91a29af04fa495e9e10ce2cc5fdf3b3313317b59bd19",
+  "scope": "30 public tasks x 3 attempts; memory, skills, MCP and subagents disabled; pre-branding execution snapshot",
+  "before": {
+    "attempts": 90,
+    "passed": 69,
+    "attempt_pass_rate": 0.7666666666666667,
+    "tasks_passing_all_three": 20
+  },
+  "after": {
+    "attempts": 90,
+    "passed": 74,
+    "attempt_pass_rate": 0.8222222222222222,
+    "tasks_passing_all_three": 24
+  },
+  "tasks": [
+    {
+      "name": "tb2-log-summary-date-ranges",
+      "prompt_sha256": "c1d4516ad4ec2238209740eaf01291df9ab48b0028a3fc5df383c6f831453484",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 27367.998,
+          "model_calls": 4,
+          "tool_calls": 3
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 41685.421,
+          "model_calls": 5,
+          "tool_calls": 4
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 25004.406,
+          "model_calls": 4,
+          "tool_calls": 3
+        }
+      ]
+    },
+    {
+      "name": "tb2-schemelike-metacircular-eval",
+      "prompt_sha256": "3af5f9567b62f93683db7518ec6fcb609f83796258aa02166b5a7091c5b69031",
+      "before": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "timeout"
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "timeout"
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "timeout"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 710194.078,
+          "model_calls": 17,
+          "tool_calls": 16
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 854476.409,
+          "model_calls": 13,
+          "tool_calls": 12
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 762897.49,
+          "model_calls": 16,
+          "tool_calls": 15
+        }
+      ]
+    },
+    {
+      "name": "tb2-cancel-async-tasks",
+      "prompt_sha256": "23d22f7039b50682941652c716f96dac314b8585c32c133614cac77dc067f47e",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 72331.005,
+          "model_calls": 5,
+          "tool_calls": 4
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 80974.024,
+          "model_calls": 7,
+          "tool_calls": 6
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 68719.47,
+          "model_calls": 5,
+          "tool_calls": 4
+        }
+      ]
+    },
+    {
+      "name": "tb2-custom-memory-heap-crash",
+      "prompt_sha256": "53c68ae14a3c3af9a97c40bfd9bdc30a5d98b37eaa2f69f763475745f70f108d",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "error"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 154752.241,
+          "model_calls": 22,
+          "tool_calls": 19
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 134004.941,
+          "model_calls": 19,
+          "tool_calls": 16
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 119191.691,
+          "model_calls": 19,
+          "tool_calls": 16
+        }
+      ]
+    },
+    {
+      "name": "tb2-git-leak-recovery",
+      "prompt_sha256": "54ac693fd26a4c003f610d62c4b2671f1d1d04ac5b1286f780605e385a9a5861",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "error"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 96077.708,
+          "model_calls": 8,
+          "tool_calls": 7
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 78516.255,
+          "model_calls": 9,
+          "tool_calls": 8
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 58674.989,
+          "model_calls": 8,
+          "tool_calls": 7
+        }
+      ]
+    },
+    {
+      "name": "tb2-sanitize-git-repo",
+      "prompt_sha256": "d9e10a56e94e51592c6016efb02adef852d4fd08f9ba23dc304d2673d1478e8a",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 128020.633,
+          "model_calls": 9,
+          "tool_calls": 8
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 130625.023,
+          "model_calls": 10,
+          "tool_calls": 9
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 106054.221,
+          "model_calls": 10,
+          "tool_calls": 9
+        }
+      ]
+    },
+    {
+      "name": "tb2-polyglot-c-py",
+      "prompt_sha256": "a57c0c0e1232113113cd29a154ea7e0ac9ea45e4aedc16958fbc6bc753a4ef96",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 172425.015,
+          "model_calls": 13,
+          "tool_calls": 10
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 148942.698,
+          "model_calls": 12,
+          "tool_calls": 9
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 156823.014,
+          "model_calls": 11,
+          "tool_calls": 8
+        }
+      ]
+    },
+    {
+      "name": "tb2-polyglot-rust-c",
+      "prompt_sha256": "b0fbcd99a97fc886e4e198b6189b977409dada47cae0a87ac7dc185b440b2355",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 135076.01,
+          "model_calls": 11,
+          "tool_calls": 8
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 138395.067,
+          "model_calls": 10,
+          "tool_calls": 7
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 95672.011,
+          "model_calls": 8,
+          "tool_calls": 5
+        }
+      ]
+    },
+    {
+      "name": "tb2-write-compressor",
+      "prompt_sha256": "c4fc3e73e44deeac95f1cd4a34a2d87e853b22ceec2b2824767f5f087b470bb2",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 105019.606,
+          "model_calls": 12,
+          "tool_calls": 9
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 121664.564,
+          "model_calls": 15,
+          "tool_calls": 12
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 69490.968,
+          "model_calls": 11,
+          "tool_calls": 8
+        }
+      ]
+    },
+    {
+      "name": "tb2-headless-terminal",
+      "prompt_sha256": "004ac3efa98dd4c564f3888fe199962772d23de405c96ec9232c1eab1a2089e8",
+      "before": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "failed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 107277.432,
+          "model_calls": 7,
+          "tool_calls": 6
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 125042.085,
+          "model_calls": 7,
+          "tool_calls": 6
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 185610.914,
+          "model_calls": 13,
+          "tool_calls": 10
+        }
+      ]
+    },
+    {
+      "name": "tb2-circuit-fibsqrt",
+      "prompt_sha256": "a7f500266a878d04ac9de39fba76220cfad216d8f6b8063bba93bebb3d4ab9ea",
+      "before": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "failed"
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "failed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 342989.798,
+          "model_calls": 7,
+          "tool_calls": 6
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 219991.592,
+          "model_calls": 5,
+          "tool_calls": 4
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 155502.686,
+          "model_calls": 11,
+          "tool_calls": 8
+        }
+      ]
+    },
+    {
+      "name": "tb2-db-wal-recovery",
+      "prompt_sha256": "5a20375162921b8911c67035d1905df7fd335d1bed03044271e608b2c3c93b26",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 38116.88,
+          "model_calls": 6,
+          "tool_calls": 5
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 45645.984,
+          "model_calls": 7,
+          "tool_calls": 6
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 40831.468,
+          "model_calls": 6,
+          "tool_calls": 5
+        }
+      ]
+    },
+    {
+      "name": "tb2-extract-elf",
+      "prompt_sha256": "f1dd8c8fd9f01101d2ecb65665bdedc33adc868abd853b3adf556f6aa4982073",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 95848.43,
+          "model_calls": 7,
+          "tool_calls": 6
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 145208.65,
+          "model_calls": 13,
+          "tool_calls": 10
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 150093.5,
+          "model_calls": 11,
+          "tool_calls": 8
+        }
+      ]
+    },
+    {
+      "name": "tb2-financial-document-processor",
+      "prompt_sha256": "b21cf2af1891922732327bf586d14b250d36d96de7867479c15bd1c58ef0db58",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 134245.603,
+          "model_calls": 11,
+          "tool_calls": 10
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 210618.165,
+          "model_calls": 12,
+          "tool_calls": 11
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 92574.599,
+          "model_calls": 10,
+          "tool_calls": 9
+        }
+      ]
+    },
+    {
+      "name": "tb2-large-scale-text-editing",
+      "prompt_sha256": "2746a16369b28b2e368ca168bc85222811cbe570f3b315f1b1c432afad07ddc8",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 67015.847,
+          "model_calls": 6,
+          "tool_calls": 5
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 61837.859,
+          "model_calls": 5,
+          "tool_calls": 4
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 53170.507,
+          "model_calls": 6,
+          "tool_calls": 5
+        }
+      ]
+    },
+    {
+      "name": "tb2-multi-source-data-merger",
+      "prompt_sha256": "d1d28bb6e37f7a255a1b7f78aae8591f35c0494f33e4913392424ad954aab944",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 57366.281,
+          "model_calls": 5,
+          "tool_calls": 4
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 55948.353,
+          "model_calls": 5,
+          "tool_calls": 4
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 48465.075,
+          "model_calls": 6,
+          "tool_calls": 5
+        }
+      ]
+    },
+    {
+      "name": "tb2-constraints-scheduling",
+      "prompt_sha256": "342def78177f9bc41bea4d11af679bc385a9dda2ac8a1e425be384a5b7f937b6",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 72174.717,
+          "model_calls": 5,
+          "tool_calls": 4
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 50849.28,
+          "model_calls": 5,
+          "tool_calls": 4
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 50358.52,
+          "model_calls": 5,
+          "tool_calls": 4
+        }
+      ]
+    },
+    {
+      "name": "tb2-regex-log",
+      "prompt_sha256": "4f7ac05e70cf9220ea0f1e5a052c5f908cd0fa884e847d80b0bd51bae2e96f9c",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 69260.889,
+          "model_calls": 6,
+          "tool_calls": 5
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 50826.646,
+          "model_calls": 5,
+          "tool_calls": 4
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 55531.2,
+          "model_calls": 6,
+          "tool_calls": 5
+        }
+      ]
+    },
+    {
+      "name": "tb2-sqlite-db-truncate",
+      "prompt_sha256": "465c135cd80be49023ea3ecf8f1d840c679b3a960efe425d510894e417b9d802",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 40722.532,
+          "model_calls": 4,
+          "tool_calls": 3
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 31968.586,
+          "model_calls": 4,
+          "tool_calls": 3
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 33110.683,
+          "model_calls": 4,
+          "tool_calls": 3
+        }
+      ]
+    },
+    {
+      "name": "tb2-sparql-university",
+      "prompt_sha256": "22eeab47d3b27b06df2627b3c21cfbd579ed7dcc85ebcb7c4b3a241c3c35f449",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 46460.674,
+          "model_calls": 8,
+          "tool_calls": 7
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 42479.554,
+          "model_calls": 7,
+          "tool_calls": 6
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 32253.118,
+          "model_calls": 7,
+          "tool_calls": 6
+        }
+      ]
+    },
+    {
+      "name": "swepro-ansible__ansible-a26c325bd8f6e2822d9d7e62f77a424c1db4fbf6",
+      "prompt_sha256": "3f4028a8b4be24e513817834d8ed93890d52a08249922e17aa56d2f8f4a32ef9",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 193147.803,
+          "model_calls": 17,
+          "tool_calls": 14
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 284062.699,
+          "model_calls": 30,
+          "tool_calls": 27
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 190701.02,
+          "model_calls": 20,
+          "tool_calls": 17
+        }
+      ]
+    },
+    {
+      "name": "swepro-ansible__ansible-b748edea457a4576847a10275678127895d2f02f",
+      "prompt_sha256": "4e44c5b16b54ec9461289b2085bc3fe01a34a926e392ddd2deaa55822684301e",
+      "before": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 857012.089,
+          "model_calls": 69,
+          "tool_calls": 66
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 430716.986,
+          "model_calls": 27,
+          "tool_calls": 24
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 862845.835,
+          "model_calls": 69,
+          "tool_calls": 66
+        }
+      ]
+    },
+    {
+      "name": "swepro-ansible__ansible-d58e69c82d7edd0583dd8e78d76b075c33c3151e",
+      "prompt_sha256": "e1948a086eba0d86a37d0a6d9ef2368599dac54eb70e2d99009ae2ed66d612e1",
+      "before": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 395173.506,
+          "model_calls": 22,
+          "tool_calls": 19
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 815671.856,
+          "model_calls": 64,
+          "tool_calls": 60
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 863732.357,
+          "model_calls": 84,
+          "tool_calls": 80
+        }
+      ]
+    },
+    {
+      "name": "swepro-ansible__ansible-1c06c46cc14324df35ac4f39a45fb3ccd602195d",
+      "prompt_sha256": "d40ae340adfdc54b27d5083b9d9bbf1038b9c678aecbd55cdf6ba283c4d86367",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 264770.575,
+          "model_calls": 23,
+          "tool_calls": 20
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 354603.465,
+          "model_calls": 37,
+          "tool_calls": 34
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 857757.865,
+          "model_calls": 80,
+          "tool_calls": 76
+        }
+      ]
+    },
+    {
+      "name": "swepro-ansible__ansible-e40889e7112ae00a21a2c74312b330e67a766cc0",
+      "prompt_sha256": "d11a9a02594cf00813999e5b8ab49b88182335a7cb271c6e1b12fadf3211b13c",
+      "before": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "timeout"
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "timeout"
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 872280.606,
+          "model_calls": 72,
+          "tool_calls": 68
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 866832.475,
+          "model_calls": 96,
+          "tool_calls": 92
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 874425.505,
+          "model_calls": 84,
+          "tool_calls": 81
+        }
+      ]
+    },
+    {
+      "name": "swepro-qutebrowser__qutebrowser-c580ebf0801e5a3ecabc54f327498bb753c6d5f2",
+      "prompt_sha256": "6e48e3fc9289b73109e36322a7014a9d80ed8e2b6c2680c136d08867804dfc43",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 179010.735,
+          "model_calls": 17,
+          "tool_calls": 14
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 134199.343,
+          "model_calls": 14,
+          "tool_calls": 11
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 133092.498,
+          "model_calls": 15,
+          "tool_calls": 12
+        }
+      ]
+    },
+    {
+      "name": "swepro-qutebrowser__qutebrowser-0fc6d1109d041c69a68a896db87cf1b8c194cef7",
+      "prompt_sha256": "43951d7ab7f6e97e38dd45c44a4c3b141cb2df3c9d26d07459a6e357a279980e",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 720971.338,
+          "model_calls": 65,
+          "tool_calls": 61
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 454184.862,
+          "model_calls": 43,
+          "tool_calls": 40
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 791086.327,
+          "model_calls": 88,
+          "tool_calls": 84
+        }
+      ]
+    },
+    {
+      "name": "swepro-qutebrowser__qutebrowser-fd6790fe8c02b144ab2464f1fc8ab3d02ce3c476",
+      "prompt_sha256": "234aad5ab2a9d7d628388719ca0101808bc2f7b2f0692271fdf5ccb02573d3c6",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 507856.415,
+          "model_calls": 40,
+          "tool_calls": 37
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 335772.404,
+          "model_calls": 39,
+          "tool_calls": 36
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 313300.944,
+          "model_calls": 34,
+          "tool_calls": 31
+        }
+      ]
+    },
+    {
+      "name": "swepro-qutebrowser__qutebrowser-44e64199ed38003253f0296badd4a447645067b6",
+      "prompt_sha256": "7644340aa5fd824298f9e95987e37df4d02945670919450750c02cd663a8f622",
+      "before": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 125923.506,
+          "model_calls": 16,
+          "tool_calls": 13
+        },
+        {
+          "round": 2,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 103285.321,
+          "model_calls": 14,
+          "tool_calls": 11
+        },
+        {
+          "round": 3,
+          "passed": true,
+          "status": "completed",
+          "score": 1.0,
+          "duration_ms": 77789.889,
+          "model_calls": 11,
+          "tool_calls": 8
+        }
+      ]
+    },
+    {
+      "name": "swepro-qutebrowser__qutebrowser-ed19d7f58b2664bb310c7cb6b52c5b9a06ea60b2",
+      "prompt_sha256": "08f6b0bd967ab694ca2032b6ecca8b2384acb297c4e0e4d48ce2372c918d6798",
+      "before": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "completed"
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "completed"
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed"
+        }
+      ],
+      "after": [
+        {
+          "round": 1,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 448295.033,
+          "model_calls": 48,
+          "tool_calls": 45
+        },
+        {
+          "round": 2,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 240670.296,
+          "model_calls": 33,
+          "tool_calls": 30
+        },
+        {
+          "round": 3,
+          "passed": false,
+          "status": "completed",
+          "score": 0.0,
+          "duration_ms": 558363.695,
+          "model_calls": 59,
+          "tool_calls": 56
+        }
+      ]
+    }
+  ]
+}
