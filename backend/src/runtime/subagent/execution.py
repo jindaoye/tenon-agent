@@ -97,7 +97,7 @@ class _SubagentExecutionMixin:
             thread_id=thread_id,
             id=turn_id,
             parent=parent,
-            user_content=[envelope.message.to_item()],
+            user_content=envelope.message.to_items(),
             provider_name=(runtime_config.provider_name if runtime_config is not None else None)
             or parent.provider_name,
             model=model,

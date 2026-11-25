@@ -18,19 +18,48 @@ export async function uploadSessionFiles(
   files: File[],
   onProgress?: (percent: number) => void,
 ): Promise<SessionFileInfo[]> {
-  const form = new FormData();
-  for (const file of files) form.append("files", file, file.name);
-  const url = `/api/sessions/${encodeURIComponent(sessionId)}/files`;
-  const response = await windowOperationControl.requestUsing(
-    url,
-    { method: "POST", body: form },
-    { sessionId },
-    (targetUrl, init) => fetchWithProgress(apiUrl(targetUrl), init, onProgress),
-  );
-  if (!response.ok) {
-    throw await apiErrorFrom(response);
+  const isImage = (file: File) => file.type.startsWith("image/") || /\.(png|jpe?g|webp)$/i.test(file.name);
+  // Preserve ordinary file batches. Images use one immutable asset per request.
+  const batches: { image: boolean; files: File[] }[] = [];
+  for (const file of files) {
+    const image = isImage(file);
+    const last = batches[batches.length - 1];
+    if (!image && last && !last.image) last.files.push(file);
+    else batches.push({ image, files: [file] });
   }
-  return response.json() as Promise<SessionFileInfo[]>;
+  const result: SessionFileInfo[] = [];
+  let completed = 0;
+  try {
+    // Writes share the session operation revision and must remain sequential.
+    for (const batch of batches) {
+      const form = new FormData();
+      for (const file of batch.files) form.append(batch.image ? "file" : "files", file, file.name);
+      const url = `/api/sessions/${encodeURIComponent(sessionId)}/${batch.image ? "assets" : "files"}`;
+      const response = await windowOperationControl.requestUsing(
+        url, { method: "POST", body: form }, { sessionId },
+        (targetUrl, init) => fetchWithProgress(apiUrl(targetUrl), init,
+          (percent) => onProgress?.(Math.round((completed * 100 + percent * batch.files.length) / files.length))),
+      );
+      if (!response.ok) throw await apiErrorFrom(response);
+      if (batch.image) {
+        const asset = await response.json() as {
+          asset_id: string; filename: string; bytes: number; mime_type: string;
+        };
+        result.push({ source: "upload", path: `asset:${asset.asset_id}`, display_path: asset.filename,
+          name: asset.filename, size: asset.bytes, mime: asset.mime_type, mtime: "", is_image: true });
+      } else {
+        result.push(...await response.json() as SessionFileInfo[]);
+      }
+      completed += batch.files.length;
+    }
+    return result;
+  } catch (error) {
+    // A rejected batch must not leave successfully uploaded draft assets behind.
+    for (const item of result.filter((item) => item.path.startsWith("asset:"))) {
+      await deleteSessionFile(sessionId, item.source, item.path).catch(() => undefined);
+    }
+    throw error;
+  }
 }
 
 /** fetch() with upload progress, using XHR under the hood. */
@@ -90,6 +119,9 @@ export function sessionFileContentUrl(
   path: string,
   download = false,
 ): string {
+  if (path.startsWith("asset:")) {
+    return apiUrl(`/api/sessions/${encodeURIComponent(sessionId)}/assets/${encodeURIComponent(path.slice(6))}/content`);
+  }
   const params = new URLSearchParams({ source, path });
   if (download) params.set("download", "true");
   return apiUrl(`/api/sessions/${encodeURIComponent(sessionId)}/files/content?${params.toString()}`);
@@ -101,6 +133,10 @@ export async function deleteSessionFile(
   source: FileSource,
   path: string,
 ): Promise<void> {
+  if (path.startsWith("asset:")) {
+    return requestVoid(`/api/sessions/${encodeURIComponent(sessionId)}/assets/${encodeURIComponent(path.slice(6))}`,
+      { method: "DELETE", operation: { sessionId } });
+  }
   const params = new URLSearchParams({ source, path });
   const response = await requestRaw(
     `/api/sessions/${encodeURIComponent(sessionId)}/files?${params.toString()}`,

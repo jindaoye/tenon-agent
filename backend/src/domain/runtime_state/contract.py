@@ -20,6 +20,8 @@ from pathlib import Path
 from typing import Any, Literal, TypeAlias
 from uuid import uuid4
 
+from backend.domain.images import ASSET_ID, ImageReference
+
 APP_VERSION = "0.0.2"
 DEFAULT_FIRST_KEPT_ITEM_SIZE = 8
 DEFAULT_COMPACTION_RETENTION = DEFAULT_FIRST_KEPT_ITEM_SIZE
@@ -33,6 +35,7 @@ ReasoningEffort: TypeAlias = Literal["low", "medium", "high", "xhigh", "max"]
 ThinkingMode: TypeAlias = Literal["enable", "disable"]
 MessageRole: TypeAlias = Literal["user", "assistant", "developer"]
 ContentBlockType: TypeAlias = Literal[
+    "image",
     "text",
     "reasoning",
     "tool_call",
@@ -59,6 +62,7 @@ THINKING_MODES = frozenset({"enable", "disable"})
 MESSAGE_ROLES = frozenset({"user", "assistant", "developer"})
 CONTENT_BLOCK_TYPES = frozenset(
     {
+        "image",
         "text",
         "reasoning",
         "tool_call",
@@ -202,6 +206,15 @@ def normalize_content(content: str | Mapping[str, Any] | Sequence[Mapping[str, A
             raise RuntimeStateValidationError(f"{kind} Item status must be running, failed, or success.")
         if kind in {"text", "reasoning", "bash"} and not isinstance(item.get("text"), str):
             raise RuntimeStateValidationError(f"{kind} Item requires string text.")
+        if kind == "image":
+            if not isinstance(item.get("asset_id"), str) or not ASSET_ID.fullmatch(item["asset_id"]):
+                raise RuntimeStateValidationError("image requires a valid asset_id.")
+            try:
+                ImageReference(
+                    item["asset_id"], item.get("filename", "image"), item.get("width", 0), item.get("height", 0)
+                )
+            except ValueError as exc:
+                raise RuntimeStateValidationError(str(exc)) from exc
         if kind == "tool_call":
             if not isinstance(item.get("call_id"), str) or not item["call_id"]:
                 raise RuntimeStateValidationError("tool_call requires call_id.")
@@ -385,12 +398,14 @@ def validate_data(value: Any) -> list[list[dict[str, Any]]]:
             if role == "user" and previous_role == "user":
                 raise RuntimeStateValidationError("Consecutive user Messages are not allowed.")
             message["content"] = normalize_content(message.get("content"))
-            if role == "user" and len(message["content"]) != 1:
-                raise RuntimeStateValidationError("Every user Message must contain exactly one Item.")
             if role == "user":
+                if not message["content"]:
+                    raise RuntimeStateValidationError("Every user Message must contain one text Item.")
                 item = message["content"][0]
                 if item.get("type") != "text" or not isinstance(item.get("text"), str):
                     raise RuntimeStateValidationError("Every user Message must contain one text Item.")
+                if any(item.get("type") != "image" for item in message["content"][1:]):
+                    raise RuntimeStateValidationError("Only image Items may follow the user text Item.")
             messages.append(_json(message, "message"))
             previous_role = str(role)
         versions.append(messages)

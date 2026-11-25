@@ -24,6 +24,7 @@ from backend.domain import (
     safe_error_message,
 )
 from backend.domain.context_budget import DEFAULT_COMPACTION_RATIO
+from backend.domain.images import redact_image_data
 from backend.runtime.core.context import AgentRuntime, PreparedResponse
 from backend.runtime.core.events import RuntimeEvent
 from backend.runtime.persistence.recording import model_error_data, model_request_data, model_response_data
@@ -322,7 +323,7 @@ class LLMClient:
             self._begin_token_usage(runtime)
             request_headers = self.llm.headers
             if logger.isEnabledFor(logging.INFO):
-                body = json.dumps(payload, ensure_ascii=False, default=str)
+                body = json.dumps(redact_image_data(payload), ensure_ascii=False, default=str)
                 safe_headers = {}
                 secrets = [self.config.api_key]
                 for name, value in request_headers.items():
@@ -354,7 +355,8 @@ class LLMClient:
                         ensure_ascii=False,
                     ),
                 )
-            runtime.exchange.wire_request = copy.deepcopy(payload)
+            runtime.exchange.wire_request = redact_image_data(payload)
+            runtime.exchange.request = runtime.exchange.wire_request
             runtime.exchange.transport_metadata = {
                 **diagnostics,
                 "http_method": "POST",

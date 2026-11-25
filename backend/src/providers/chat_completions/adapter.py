@@ -6,7 +6,8 @@ import json
 from collections.abc import Callable, Mapping
 from typing import Any
 
-from backend.domain import AssistantMessage, ChatMessage, ToolSpec, safe_error_message
+from backend.domain import AssistantMessage, ChatMessage, ToolSpec, UserMessage, safe_error_message
+from backend.domain.images import image_budget
 from backend.runtime.core.context import AgentRuntime, PreparedResponse
 
 from ..config import ModelConfig
@@ -92,7 +93,9 @@ class ChatCompletions:
         if tools:
             payload["tools"] = [_tool_definition(spec) for spec in tools]
         serialized = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
-        return self._estimate_serialized(serialized)
+        return self._estimate_serialized(serialized) + sum(
+            image_budget(image) for message in messages if isinstance(message, UserMessage) for image in message.images
+        )
 
     def estimate_output_tokens(self, message: AssistantMessage) -> int:
         """Estimate streamed output until the provider returns final usage."""
@@ -151,6 +154,12 @@ class ChatCompletions:
         return "chat_completions"
 
     def prepare_request(self, runtime: AgentRuntime) -> dict[str, Any]:
+        messages = runtime.exchange.messages or runtime.state.messages
+        if (
+            any(isinstance(message, UserMessage) and message.images for message in messages)
+            and not self.config.supports_images
+        ):
+            raise ModelRequestError("当前模型配置未启用图片输入，请在提供商设置中确认视觉能力。")
         return _prepare_request(runtime)
 
     def prepare_response(self, runtime: AgentRuntime) -> PreparedResponse:

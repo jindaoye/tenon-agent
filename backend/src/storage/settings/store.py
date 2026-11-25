@@ -239,6 +239,7 @@ class LocalSettingsStore:
             "temperature": float(record.get("temperature", 0.0)),
             "tokenizer_model": str(record.get("tokenizer_model") or ""),
             "api_key_configured": bool(record.get("api_key_ciphertext")),
+            "supports_images": record.get("supports_images") is True,
         }
 
     def _provider_records(self, connection=None) -> list[dict[str, object]]:

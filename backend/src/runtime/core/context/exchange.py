@@ -20,6 +20,7 @@ from backend.domain import (
     todo_snapshot_context,
 )
 from backend.domain.file_paths import is_reference_path
+from backend.domain.images import ImageReference
 from backend.domain.runtime_state import RuntimeState as RuntimeTreeNode
 
 RuntimeOperation = Literal[
@@ -185,8 +186,15 @@ def _chat_messages_from_nodes(nodes: Sequence[RuntimeTreeNode]) -> list[ChatMess
                                 references.append(f"- @{Path(raw_path).as_posix()}{suffix}")
                 if references:
                     user_text = f"{user_text}\n\nFile references:\n" + "\n".join(references)
-                if user_text:
-                    result.append(UserMessage(content=user_text))
+                images = tuple(
+                    ImageReference(
+                        item["asset_id"], item.get("filename", "image"), item.get("width", 0), item.get("height", 0)
+                    )
+                    for item in blocks
+                    if item.get("type") == "image"
+                )
+                if user_text or images:
+                    result.append(UserMessage(content=user_text, images=images))
                 continue
 
             blocks = _assistant_items(message.get("content", []), tool_calls)
@@ -203,7 +211,15 @@ def _chat_messages_from_nodes(nodes: Sequence[RuntimeTreeNode]) -> list[ChatMess
                     )
                 )
             if checkpoint_parts:
-                result.append(UserMessage(content="\n\n".join(checkpoint_parts)))
+                images = tuple(
+                    ImageReference(
+                        image["asset_id"], image.get("filename", "image"), image.get("width", 0), image.get("height", 0)
+                    )
+                    for item in blocks
+                    if item.get("type") == "compaction"
+                    for image in item.get("images", [])
+                )
+                result.append(UserMessage(content="\n\n".join(checkpoint_parts), images=images))
             text_parts: list[str] = []
             reasoning_parts: list[str] = []
             calls: dict[str, ToolMessage] = {}

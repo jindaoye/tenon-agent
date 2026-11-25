@@ -6,7 +6,8 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
-from backend.domain import AssistantMessage
+from backend.domain import AssistantMessage, UserMessage
+from backend.domain.images import image_budget
 from backend.runtime.core.context import AgentRuntime
 from backend.runtime.core.events import RuntimeEvent
 
@@ -122,7 +123,13 @@ def estimate_total_tokens(runtime: AgentRuntime, message: AssistantMessage) -> i
     response_text = json.dumps(
         getattr(message, "__dict__", str(message)), ensure_ascii=False, default=str, separators=(",", ":")
     )
-    return _encode_length(request_text, model) + _encode_length(response_text, model)
+    visual_tokens = sum(
+        image_budget(image)
+        for item in (runtime.exchange.messages or runtime.state.messages)
+        if isinstance(item, UserMessage)
+        for image in item.images
+    )
+    return _encode_length(request_text, model) + _encode_length(response_text, model) + visual_tokens
 
 
 class TokenUsageTracker:

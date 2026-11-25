@@ -235,6 +235,23 @@ class ContextManager:
             if checkpoint_suffix:
                 checkpoint = f"{checkpoint}\n\n{checkpoint_suffix}"
             compressed = [SystemMessage(name=_CONTEXT_SUMMARY_NAME, content=checkpoint), *retained]
+            retained_ids = {
+                image.asset_id for message in retained if isinstance(message, UserMessage) for image in message.images
+            }
+            historical_images = {
+                image.asset_id: image
+                for message in source
+                if isinstance(message, UserMessage)
+                for image in message.images
+                if image.asset_id not in retained_ids
+            }
+            if historical_images:
+                compressed.insert(
+                    1,
+                    UserMessage(
+                        content="Images retained from earlier conversation.", images=tuple(historical_images.values())
+                    ),
+                )
             estimated_after = estimate_candidate(compressed)
             if estimated_after > self.target_tokens:
                 raise PlanningError(
@@ -302,6 +319,8 @@ class ContextManager:
         transcript: list[dict[str, Any]] = []
         for message in messages:
             item: dict[str, Any] = {"role": message.role, "content": message.content}
+            if isinstance(message, UserMessage) and message.images:
+                item["images"] = [image.to_item() for image in message.images]
             if isinstance(message, AssistantMessage) and message.tool_messages:
                 item["tools"] = [
                     {

@@ -77,6 +77,8 @@ export function MessageReferenceChip({
       title={reference.display_path}
     >
       <span className={`file-source-badge ${reference.source}`}>{sourceLabel}</span>
+      {reference.path.startsWith("asset:") ? <img src={url} alt={reference.display_path}
+        loading="lazy" style={{ maxWidth: 160, maxHeight: 120, objectFit: "contain" }} /> : null}
       <span className="message-reference-path">{reference.display_path}</span>
     </a>
   );
@@ -102,7 +104,7 @@ export function MessageActions({
   return (
     <div className="message-actions" aria-label={`${msg.role === "user" ? "用户" : "Agent"}消息操作`}>
       <IconAction label="复制" icon={<CopyOutlined />} onClick={() => void copy()} disabled={!msg.content} />
-      {onEdit ? <IconAction label="编辑" icon={<EditOutlined />} onClick={onEdit} disabled={busy || !msg.content} /> : null}
+      {onEdit ? <IconAction label="编辑" icon={<EditOutlined />} onClick={onEdit} disabled={busy || (!msg.content && !msg.references?.length)} /> : null}
       {onFork ? <IconAction label="Fork" icon={<BranchesOutlined />} onClick={onFork} disabled={busy || msg.running} /> : null}
     </div>
   );

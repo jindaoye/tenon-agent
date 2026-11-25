@@ -16,6 +16,7 @@ from backend.domain import (
     UserMessage,
 )
 from backend.domain.execution_config import RuntimeConfigUpdate
+from backend.domain.images import ImageContent
 from backend.domain.messages import DeveloperMessage
 from backend.domain.runtime_state import RuntimeState as RuntimeTreeNode
 from backend.domain.state import utc_now
@@ -83,6 +84,8 @@ class RuntimeServices:
     # rather than a persisted field: the bridge owns the dynamic sidecar and
     # can replace a failed placeholder immediately before every model request.
     runtime_node_context: Callable[[], Sequence[RuntimeTreeNode]] | None = None
+    image_loader: Callable[[str], ImageContent] | None = None
+    image_metadata: Callable[[str], dict] | None = None
     context_prefix_messages: list[ChatMessage] = field(default_factory=list)
     context_suffix_messages: list[ChatMessage] = field(default_factory=list)
     completion_review_message: UserMessage | None = None
@@ -180,6 +183,16 @@ class AgentRuntime:
         else:
             selected = nodes[-1:] if current_turn_only else nodes
             messages = [*self.services.context_prefix_messages, *_chat_messages_from_nodes(selected)]
+        if self.services.image_metadata is not None:
+            from backend.domain.images import ImageReference
+
+            for message in messages:
+                if isinstance(message, UserMessage) and message.images:
+                    message.images = tuple(
+                        ImageReference(image.asset_id, meta["filename"], meta["width"], meta["height"])
+                        for image in message.images
+                        for meta in [self.services.image_metadata(image.asset_id)]
+                    )
         messages.extend(self.services.context_suffix_messages)
         run = self.state.current_run
         if (

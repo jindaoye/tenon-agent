@@ -58,6 +58,7 @@ class ModelConfig:
     provider_name: str = DEFAULT_PROVIDER_NAME
     context_size: int = 1_024_000
     tokenizer_model: str = ""
+    supports_images: bool = False
     protocol: str | None = None
     temperature: float = 0.0
     protocol_explicit: bool = field(init=False, repr=False, compare=False)
@@ -103,6 +104,7 @@ class ModelConfig:
                 provider_name=str(values.get("provider_name") or values.get("provider") or DEFAULT_PROVIDER_NAME),
                 context_size=int(values.get("context_size", 1_024_000)),
                 tokenizer_model=str(values.get("tokenizer_model") or ""),
+                supports_images=values.get("supports_images") is True,
                 protocol=str(values.get("protocol") or "chat_completions"),
                 temperature=float(raw_temperature),
             )
@@ -156,6 +158,7 @@ class ModelConfig:
                 context_size=int(values.get("context_size", 1_024_000)),
                 tokenizer_model=str(values.get("tokenizer_model", "")).strip(),
                 protocol=str(values.get("protocol", "chat_completions")).strip().lower(),
+                supports_images=values.get("supports_images") is True,
                 temperature=float(raw_temperature),
             )
         except (TypeError, ValueError) as exc:

@@ -238,6 +238,7 @@ describe("UserSettingsModal", () => {
       max_tokens: 2048,
       context_size: 65536,
       temperature: 0.7,
+      supports_images: false,
       tokenizer_model: "",
       api_key: "",
     }));
@@ -270,6 +271,7 @@ describe("UserSettingsModal", () => {
     await userEvent.type(screen.getByRole("spinbutton", { name: "最大输出 token openai" }), "4096");
     await userEvent.clear(screen.getByRole("spinbutton", { name: "上下文窗口 openai" }));
     await userEvent.type(screen.getByRole("spinbutton", { name: "上下文窗口 openai" }), "131072");
+    await userEvent.click(screen.getByRole("switch", { name: "支持图片输入 openai" }));
     const slider = screen.getByRole("slider", { name: "Temperature openai" });
     for (let index = 0; index < 7; index += 1) {
       fireEvent.keyDown(slider, { key: "ArrowRight", code: "ArrowRight", keyCode: 39, which: 39 });
@@ -282,6 +284,7 @@ describe("UserSettingsModal", () => {
       max_tokens: 4096,
       context_size: 131072,
       temperature: 0.7,
+      supports_images: true,
     }));
     expect(onProviderConfigUpdate).toHaveBeenCalledWith(updated);
   });

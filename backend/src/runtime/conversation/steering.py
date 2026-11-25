@@ -74,7 +74,9 @@ def apply_steering(runtime: AgentRuntime, update: SteeringUpdate, *, phase: str)
         and has_turn_delivery(runtime.state.session_id, update.delivery_id)
     )
     if not already_applied:
-        runtime.state.messages.append(UserMessage(content=update.delivery.message.model_text()))
+        runtime.state.messages.append(
+            UserMessage(content=update.delivery.message.model_text(), images=update.delivery.message.images)
+        )
         runtime.run.history = runtime.state.messages
     if store is not None:
         store.append_turn_input(

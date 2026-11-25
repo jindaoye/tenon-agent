@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .file_paths import FILE_SOURCES, is_reference_path
+from .images import ASSET_ID, ImageReference
 
 
 @dataclass(frozen=True, slots=True)
@@ -16,6 +17,10 @@ class FileReference:
     display_path: str | None = None
 
     def __post_init__(self) -> None:
+        if self.path.startswith("asset:"):
+            if self.source != "upload" or not ASSET_ID.fullmatch(self.path[6:]) or not self.display_path:
+                raise ValueError("Invalid image reference.")
+            return
         if not self.path or not is_reference_path(self.path):
             raise ValueError("Invalid reference path.")
         if self.source is not None and (self.source not in FILE_SOURCES or not self.display_path):
@@ -28,6 +33,8 @@ class FileReference:
         return cls(path=value["path"], source=value.get("source"), display_path=value.get("display_path"))
 
     def to_dict(self) -> dict[str, str]:
+        if self.path.startswith("asset:"):
+            return {"source": "upload", "path": self.path, "display_path": self.display_path or "image"}
         if self.source is None:
             return {"path": self.path}
         return {"source": self.source, "path": self.path, "display_path": self.display_path or ""}
@@ -55,12 +62,24 @@ class InputMessage:
 
     def to_item(self) -> dict[str, Any]:
         item: dict[str, Any] = {"type": "text", "text": self.text, "status": "success"}
-        if self.references:
-            item["references"] = self.reference_dicts()
+        references = [ref.to_dict() for ref in self.references if not ref.path.startswith("asset:")]
+        if references:
+            item["references"] = references
         return item
 
+    @property
+    def images(self) -> tuple[ImageReference, ...]:
+        return tuple(
+            ImageReference(ref.path[6:], ref.display_path or "image")
+            for ref in self.references
+            if ref.path.startswith("asset:")
+        )
+
+    def to_items(self) -> list[dict[str, Any]]:
+        return [self.to_item(), *(image.to_item() for image in self.images)]
+
     def model_text(self) -> str:
-        if not self.references:
+        if not any(not item.path.startswith("asset:") for item in self.references):
             return self.text
         return (
             self.text
@@ -68,5 +87,6 @@ class InputMessage:
             + "\n".join(
                 f"- @{item.path.replace(chr(92), '/')}" + (f" ({item.source})" if item.source else "")
                 for item in self.references
+                if not item.path.startswith("asset:")
             )
         )

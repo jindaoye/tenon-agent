@@ -102,6 +102,7 @@ def create_app(state: WebAppState | None = None) -> FastAPI:
         allow_credentials=False,
     )
 
+    from .assets import router as assets_router
     from .chat.decisions import router as decisions_router
     from .memory_routes import router as memory_router
     from .routes.agent_threads import router as agent_threads_router
@@ -120,6 +121,7 @@ def create_app(state: WebAppState | None = None) -> FastAPI:
     from .shared.benchmark import create_benchmark_app
     from .shared.info import router as info_router
 
+    app.include_router(assets_router)
     app.include_router(settings_router)
     app.include_router(skill_settings_router)
     app.include_router(mcp_settings_router)

@@ -189,6 +189,15 @@ async function streamEndpoint(
   }
 }
 
+export function userMessageContent(prompt: string, references: FileReference[] = []) {
+  const files = references.filter((ref) => !ref.path.startsWith("asset:"));
+  const images = references.filter((ref) => ref.path.startsWith("asset:"));
+  return [
+    { type: "text", text: prompt, ...(files.length ? { references: files } : {}) },
+    ...images.map((ref) => ({ type: "image", asset_id: ref.path.slice(6) })),
+  ];
+}
+
 export async function streamChat(
   prompt: string,
   onMessage: (message: StreamMessage) => void,
@@ -202,7 +211,7 @@ export async function streamChat(
       ...(options.queuedDelivery
         ? { queued_delivery: { message_ids: options.queuedDelivery.messageIds } }
         : {
-          message: { role: "user", content: [{ type: "text", text: prompt, ...(options.references?.length ? { references: options.references } : {}) }] },
+          message: { role: "user", content: userMessageContent(prompt, options.references) },
         }),
       ...executionConfig(options),
     };
@@ -236,7 +245,7 @@ export async function streamRewind(
   const receipt = await requestJson<{ turn_id: string; delivery_id: string; status: "accepted" }>(
     `/api/turns/${encodeURIComponent(turnId)}/rewind`,
     { ...jsonBody({
-      message: { role: "user", content: [{ type: "text", text: prompt, ...(options.references?.length ? { references: options.references } : {}) }] },
+      message: { role: "user", content: userMessageContent(prompt, options.references) },
       ...executionConfig(options),
     }), signal, operation: { sessionId: options.sessionId } },
   );

@@ -30,6 +30,7 @@ export interface ProviderConfig {
   max_tokens: number;
   context_size: number;
   temperature: number;
+  supports_images?: boolean;
   tokenizer_model: string;
   api_key_configured: boolean;
 }
@@ -310,6 +311,7 @@ export function updateProviderConfigById(
     max_tokens?: number;
     context_size?: number;
     temperature?: number;
+    supports_images?: boolean;
     api_key?: string;
   },
 ): Promise<ProviderConfig> {

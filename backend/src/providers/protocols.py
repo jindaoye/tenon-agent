@@ -17,11 +17,12 @@ from backend.domain import (
     UserMessage,
     safe_error_message,
 )
+from backend.domain.images import image_budget
 from backend.runtime.core.context import AgentRuntime, PreparedResponse
 
 from .chat_completions import ChatCompletions
 from .config import ModelConfig
-from .errors import ModelResponseError, ProviderOutputError
+from .errors import ModelRequestError, ModelResponseError, ProviderOutputError
 
 
 class ChatCompletionsAdapter(ChatCompletions):
@@ -49,6 +50,9 @@ def _estimate(messages: list[ChatMessage], tools: list[ToolSpec], parameters: Ma
     }
     input_tokens = max(1, len(json.dumps(payload, ensure_ascii=False)) // 4)
     max_tokens = parameters.get("max_tokens", 0)
+    input_tokens += sum(
+        image_budget(image) for message in messages if isinstance(message, UserMessage) for image in message.images
+    )
     return input_tokens + (int(max_tokens) if isinstance(max_tokens, int) and max_tokens > 0 else 0)
 
 
@@ -103,6 +107,11 @@ class ResponsesAdapter:
     estimate_input_tokens = estimate_tokens
 
     def prepare_request(self, runtime: AgentRuntime) -> dict[str, Any]:
+        if any(
+            isinstance(message, UserMessage) and message.images
+            for message in (runtime.exchange.messages or runtime.state.messages)
+        ):
+            raise ModelRequestError("图片输入第一版仅支持 Chat Completions 协议。")
         config = runtime.request_config()
         parameters = dict(config.get("request_parameters") or {})
         overrides = runtime.exchange.context.get("request_parameters")
@@ -321,6 +330,11 @@ class MessagesAdapter:
     estimate_input_tokens = estimate_tokens
 
     def prepare_request(self, runtime: AgentRuntime) -> dict[str, Any]:
+        if any(
+            isinstance(message, UserMessage) and message.images
+            for message in (runtime.exchange.messages or runtime.state.messages)
+        ):
+            raise ModelRequestError("图片输入第一版仅支持 Chat Completions 协议。")
         config = runtime.request_config()
         parameters = dict(config.get("request_parameters") or {})
         overrides = runtime.exchange.context.get("request_parameters")

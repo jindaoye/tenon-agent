@@ -29,6 +29,10 @@ cd ..
 
 启动本地 backend 与前端：
 
+当前 Windows 命令权限审计需要 `SeSecurityPrivilege`。需要执行命令工具时，
+请在管理员 PowerShell 中启动后端；使用 F5 调试时，以管理员身份启动 VS Code。
+前端可以在普通权限终端运行。Broker 服务就绪与后端具备审计权限是两项独立检查。
+
 ```powershell
 uv run python -m backend.api
 ```
@@ -37,6 +41,10 @@ uv run python -m backend.api
 cd frontend
 npm run dev
 ```
+
+开发页面固定使用 `http://127.0.0.1:5173`；端口占用时会明确报错，不自动换端口。
+更改项目文件夹名称后，应重新打开新目录，更新 Python 可编辑安装以及 Broker 的
+可执行文件、PythonClass 和嵌入式 Python 搜索路径；本地数据目录和服务标识保持不变。
 
 
 ## 配置和数据

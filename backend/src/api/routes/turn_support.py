@@ -57,14 +57,28 @@ def _user_item(message: Mapping[str, object]) -> dict[str, object]:
     if message.get("role") != "user":
         raise HTTPException(status_code=422, detail="message.role 必须为 user。")
     content = message.get("content")
-    if not isinstance(content, list) or len(content) != 1 or not isinstance(content[0], Mapping):
-        raise HTTPException(status_code=422, detail="user Message 必须恰好包含一个 Item。")
-    item = dict(content[0])
-    if item.get("type") != "text" or not isinstance(item.get("text"), str):
-        raise HTTPException(status_code=422, detail="当前交互要求一个 text Item。")
-    if not str(item["text"]).strip() and not item.get("references"):
-        raise HTTPException(status_code=422, detail="text 或文件引用至少需要一个。")
-    item["status"] = "success"
+    if not isinstance(content, list) or not content or any(not isinstance(item, Mapping) for item in content):
+        raise HTTPException(status_code=422, detail="user Message requires content items.")
+    texts = [dict(item) for item in content if item.get("type") == "text"]
+    images = [dict(item) for item in content if item.get("type") == "image"]
+    if len(texts) > 1 or len(texts) + len(images) != len(content) or len(images) > 4:
+        raise HTTPException(status_code=422, detail="最多一个文本项和四张图片。")
+    item = texts[0] if texts else {"type": "text", "text": ""}
+    if not isinstance(item.get("text"), str):
+        raise HTTPException(status_code=422, detail="text must be a string.")
+    references = item.get("references", [])
+    if not isinstance(references, list):
+        raise HTTPException(status_code=422, detail="references must be a list.")
+    for image in images:
+        from backend.domain.images import ASSET_ID
+
+        asset_id = image.get("asset_id")
+        if not isinstance(asset_id, str) or not ASSET_ID.fullmatch(asset_id):
+            raise HTTPException(status_code=422, detail="Invalid image asset ID.")
+        references = [*references, {"source": "upload", "path": f"asset:{asset_id}", "display_path": "image"}]
+    if not item["text"].strip() and not references:
+        raise HTTPException(status_code=422, detail="文字、图片或文件引用至少需要一个。")
+    item.update(references=references, status="success")
     return item
 
 
@@ -147,7 +161,7 @@ def create_initial_turn(
         turn = parent.clone()
         turn.data[turn.current_data_idx].extend(
             [
-                {"role": "user", "content": [message.to_item()], "delivery_id": delivery_id},
+                {"role": "user", "content": message.to_items(), "delivery_id": delivery_id},
                 {"role": "assistant", "content": []},
             ]
         )
@@ -163,7 +177,7 @@ def create_initial_turn(
         thread_id=thread_id,
         id=turn_id,
         parent=parent,
-        user_content=[message.to_item()],
+        user_content=message.to_items(),
         provider_name=resolved_config.provider_name or selected.provider_name,
         model=model.model_dump(),
         permission_mode=resolved_config.permission_mode,

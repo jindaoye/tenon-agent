@@ -1,5 +1,5 @@
 import { ErrorDisplay } from "../ErrorDisplay";
-import { AutoComplete, Button, Collapse, Form, Input, Select, Slider, Space, Tag, Typography } from "antd";
+import { AutoComplete, Button, Collapse, Form, Input, Select, Slider, Space, Switch, Tag, Typography } from "antd";
 import type { UserSettingsState } from "./useUserSettingsState";
 
 type SectionProps = { state: UserSettingsState };
@@ -56,6 +56,10 @@ export function ProviderAddSection({ state }: SectionProps) {
           <Input aria-label="上下文窗口" type="number" value={draft.context_size} onChange={(event) => state.setProviderAddDraft((current) => ({ ...current, context_size: Number(event.target.value) }))} />
         </Form.Item>
       </Space.Compact>
+      <Form.Item label="支持图片输入" extra="请确认所选模型支持视觉输入。当前支持 Chat Completions 协议。">
+        <Switch aria-label="支持图片输入" checked={Boolean(draft.supports_images)} disabled={draft.protocol !== "chat_completions"}
+          onChange={(supports_images) => state.setProviderAddDraft((current) => ({ ...current, supports_images }))} />
+      </Form.Item>
       <Form.Item label={temperatureLabel(draft.temperature)}>
         <Slider
           ariaLabelForHandle="Temperature"
@@ -117,6 +121,7 @@ export function ProviderManageSection({ state }: SectionProps) {
             max_tokens: provider.max_tokens,
             context_size: provider.context_size,
             temperature: provider.temperature,
+            supports_images: provider.supports_images ?? false,
             api_key: "",
           };
           const modelFeedback = state.managedModelFeedback[provider.id];
@@ -180,6 +185,11 @@ export function ProviderManageSection({ state }: SectionProps) {
                     <Input aria-label={`上下文窗口 ${provider.provider_name}`} type="number" value={draft.context_size} onChange={(event) => state.updateProviderDraft(provider.id, { context_size: Number(event.target.value) })} />
                   </Form.Item>
                 </Space.Compact>
+                <Form.Item label="支持图片输入" extra="请确认所选模型支持视觉输入。">
+                  <Switch aria-label={`支持图片输入 ${provider.provider_name}`} checked={Boolean(draft.supports_images)}
+                    disabled={provider.protocol !== "chat_completions"}
+                    onChange={(supports_images) => state.updateProviderDraft(provider.id, { supports_images })} />
+                </Form.Item>
                 <Form.Item label={temperatureLabel(draft.temperature)}>
                   <Slider
                     ariaLabelForHandle={`Temperature ${provider.provider_name}`}

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import json
 from typing import Any
 
@@ -55,7 +56,7 @@ def _tool_definition(spec: ToolSpec) -> dict[str, Any]:
     return {"type": "function", "function": function}
 
 
-def _wire_messages_from(source: list[ChatMessage]) -> list[dict[str, Any]]:
+def _wire_messages_from(source: list[ChatMessage], image_loader=None) -> list[dict[str, Any]]:
     if not source:
         raise ModelRequestError("Chat Completions messages must contain at least one message.")
     wire: list[dict[str, Any]] = []
@@ -94,7 +95,16 @@ def _wire_messages_from(source: list[ChatMessage]) -> list[dict[str, Any]]:
                 raise ModelRequestError(
                     f"Unknown Chat Completions user message option(s): {', '.join(sorted(unknown))}."
                 )
-            item = {"role": "user", "content": message.content or ""}
+            content: Any = message.content or ""
+            if message.images:
+                content = [{"type": "text", "text": message.content}] if message.content else []
+                for image in message.images:
+                    url = "[image]"
+                    if image_loader is not None:
+                        loaded = image_loader(image.asset_id)
+                        url = f"data:{loaded.mime_type};base64," + base64.b64encode(loaded.data).decode("ascii")
+                    content.append({"type": "image_url", "image_url": {"url": url}})
+            item = {"role": "user", "content": content}
             item.update(_optional_name(message))
             _merge_extra_fields(
                 item,
@@ -198,4 +208,10 @@ def _wire_messages_from(source: list[ChatMessage]) -> list[dict[str, Any]]:
 
 
 def _wire_messages(runtime: AgentRuntime) -> list[dict[str, Any]]:
-    return _wire_messages_from(runtime.exchange.messages or runtime.state.messages)
+    messages = runtime.exchange.messages or runtime.state.messages
+    if (
+        any(isinstance(message, UserMessage) and message.images for message in messages)
+        and runtime.services.image_loader is None
+    ):
+        raise ModelRequestError("Image asset loader is unavailable.")
+    return _wire_messages_from(messages, runtime.services.image_loader)

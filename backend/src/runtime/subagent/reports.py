@@ -244,7 +244,7 @@ class _SubagentReportDeliveryMixin:
         ):
             raise ToolError("The target must be a Subagent Thread in this Session tree.")
         parsed_references = self._references_from_web(session_id, target, references or [])
-        if not content.strip():
+        if not content.strip() and not parsed_references:
             raise ToolError("Agent message requires task text.")
         return self._dispatch_message(
             session_id,
@@ -273,6 +273,13 @@ class _SubagentReportDeliveryMixin:
             raise ToolError("The target Agent has no canonical current Turn.")
         paths = ScopedPaths(Path(turn.cwd), Path(turn.project_cwd) if turn.project_cwd else None)
         references: list[dict[str, str]] = []
+        image_ids = [value.get("path", "")[6:] for value in values if value.get("path", "").startswith("asset:")]
+        from backend.storage.assets import ImageAssetStore
+
+        try:
+            images = {image.asset_id: image for image in ImageAssetStore(self._store, session_id).pin(image_ids)}
+        except ValueError as exc:
+            raise ToolError(str(exc)) from exc
         for value in values:
             source, raw_path, display_path = value.get("source"), value.get("path"), value.get("display_path")
             if (
@@ -282,6 +289,11 @@ class _SubagentReportDeliveryMixin:
                 or not display_path
             ):
                 raise ToolError("Browser Agent references require source, path, and display_path.")
+            if raw_path.startswith("asset:"):
+                if source != "upload":
+                    raise ToolError("Image references require upload source.")
+                references.append(images[raw_path[6:]].to_reference())
+                continue
             scope = "project" if source == "project" else "workspace"
             try:
                 prefix = raw_path.partition(":")[0]

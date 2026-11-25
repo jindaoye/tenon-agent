@@ -150,7 +150,8 @@ export function normalizeRuntimeNode(node: RuntimeTreeNode): RuntimeTreeNode {
       if (message.role === "user" && index > 0 && version[index - 1]?.role === "user") {
         throw new Error("Consecutive user Messages are not allowed");
       }
-      if (message.role === "user" && (message.content.length !== 1 || message.content[0]?.type !== "text" || typeof message.content[0]?.text !== "string")) {
+      if (message.role === "user" && (message.content[0]?.type !== "text" || typeof message.content[0]?.text !== "string"
+        || message.content.slice(1).some((item) => item.type !== "image" || typeof item.asset_id !== "string" || !/^asset_[0-9a-f]{32}$/.test(item.asset_id)))) {
         throw new Error("A user Message must contain one text Item");
       }
       for (const item of message.content as TurnItem[]) validateRetryItem(item);

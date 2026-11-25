@@ -85,6 +85,7 @@ export function useUserSettingsState({
             max_tokens: provider.max_tokens,
             context_size: provider.context_size,
             temperature: provider.temperature,
+            supports_images: provider.supports_images ?? false,
             api_key: "",
           },
         ]));
@@ -235,6 +236,7 @@ export function useUserSettingsState({
           max_tokens: provider.max_tokens,
           context_size: provider.context_size,
           temperature: provider.temperature,
+          supports_images: provider.supports_images ?? false,
           api_key: "",
         };
         setProviderDrafts((current) => ({ ...current, [provider.id]: draft }));
@@ -272,6 +274,7 @@ export function useUserSettingsState({
           max_tokens: defaultProvider.max_tokens,
           context_size: defaultProvider.context_size,
           temperature: defaultProvider.temperature,
+          supports_images: defaultProvider.supports_images ?? false,
           api_key: "",
         }),
         ...patch,
@@ -341,6 +344,7 @@ export function useUserSettingsState({
       max_tokens: provider.max_tokens,
       context_size: provider.context_size,
       temperature: provider.temperature,
+      supports_images: provider.supports_images ?? false,
       api_key: "",
     };
     setSaving(true);
@@ -352,6 +356,7 @@ export function useUserSettingsState({
         max_tokens: draft.max_tokens,
         context_size: draft.context_size,
         temperature: draft.temperature,
+        supports_images: draft.supports_images ?? false,
         ...(draft.api_key.trim() ? { api_key: draft.api_key } : {}),
       });
       const providers = (settings?.provider_configs ?? []).map((item) => item.id === updated.id ? updated : item);
@@ -367,6 +372,7 @@ export function useUserSettingsState({
         max_tokens: updated.max_tokens,
         context_size: updated.context_size,
         temperature: updated.temperature,
+        supports_images: updated.supports_images ?? false,
         api_key: "",
       };
       setProviderDrafts((current) => ({ ...current, [updated.id]: nextDraft }));

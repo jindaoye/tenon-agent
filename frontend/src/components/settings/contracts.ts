@@ -22,6 +22,7 @@ export type ProviderDraft = {
   max_tokens: number;
   context_size: number;
   temperature: number;
+  supports_images?: boolean;
   tokenizer_model: string;
   api_key: string;
 };
@@ -32,6 +33,7 @@ export type ProviderEditDraft = {
   max_tokens: number;
   context_size: number;
   temperature: number;
+  supports_images?: boolean;
   api_key: string;
 };
 
@@ -71,6 +73,7 @@ export const defaultProvider: ProviderConfig = {
   max_tokens: 8192,
   context_size: 1024000,
   temperature: 0,
+  supports_images: false,
   tokenizer_model: "",
   api_key_configured: false,
 };
@@ -83,6 +86,7 @@ export const defaultProviderDraft: ProviderDraft = {
   max_tokens: defaultProvider.max_tokens,
   context_size: defaultProvider.context_size,
   temperature: defaultProvider.temperature,
+  supports_images: false,
   tokenizer_model: defaultProvider.tokenizer_model,
   api_key: "",
 };

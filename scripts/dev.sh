@@ -2,7 +2,7 @@
 # Start the local client tiers independently.
 #
 #   scripts/dev.sh backend   # server  -> http://127.0.0.1:8000
-#   scripts/dev.sh frontend  # client  -> http://localhost:5173
+#   scripts/dev.sh frontend  # client  -> http://127.0.0.1:5173
 #   scripts/dev.sh all       # backend + frontend together
 #
 # Model config defaults to ~/.praxis/config.toml; override with PRAXIS_CONFIG.
@@ -17,7 +17,7 @@ start_backend() {
 }
 
 start_frontend() {
-  echo "[dev] frontend client: http://localhost:5173"
+  echo "[dev] frontend client: http://127.0.0.1:5173"
   (cd frontend && npm run dev)
 }
 

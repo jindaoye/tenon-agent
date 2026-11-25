@@ -119,6 +119,20 @@ describe("Turn protocol projection", () => {
     node.data[0][0].content[0].references = [reference];
     expect(projectTurnPath(new Map([["session_1:turn_1", node]]), node.id)[0].references).toEqual([reference]);
   });
+  it("restores image attachments from a saved image-only user message", () => {
+    const node = turn();
+    const assetId = "asset_0123456789abcdef0123456789abcdef";
+    node.data[0][0].content = [
+      { type: "text", text: "", status: "success" },
+      { type: "image", asset_id: assetId, filename: "picture.png", status: "success" },
+    ];
+    const normalized = normalizeRuntimeNode(node);
+    const projected = projectTurnPath(new Map([["session_1:turn_1", normalized]]), node.id);
+    expect(projected[0].content).toBe("");
+    expect(projected[0].references).toEqual([
+      { source: "upload", path: `asset:${assetId}`, display_path: "picture.png" },
+    ]);
+  });
   it("accepts only protocol 0.0.2 with a string project_cwd", () => {
     expect(TURN_PROTOCOL_VERSION).toBe("0.0.2");
     expect(normalizeRuntimeNode(turn()).project_cwd).toBe("C:\\project");

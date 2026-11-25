@@ -212,6 +212,7 @@ class ExternalMcpManager:
             )
             self.definitions[server_name] = definitions
             self.failed_servers.pop(server_name, None)
+            self.server_health[server_name] = "healthy"
             return (server_name, id(self._sessions[server_name]))
         except FutureTimeoutError as exc:
             raise ToolError(safe_error_message(exc)) from exc
@@ -367,7 +368,7 @@ class ExternalMcpManager:
     def _register_service_jobs(self) -> None:
         if self._job_registry is None:
             return
-        scope = self._job_scope or self._job_registry.root_scope().child(JobScopeKind.RUNNER)
+        scope = self._job_scope or self._job_registry.root_scope().child(JobScopeKind.THREAD)
         for server_name in self._sessions:
             job = ServiceJob(
                 self._job_registry.new_job_id(),

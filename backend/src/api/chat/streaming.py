@@ -395,7 +395,7 @@ def _stream(
                 and initial_delivery.envelope.start.operation == "rewind"
             ):
                 node_store.append_turn_version(
-                    turn_id, message.to_item(), delivery_id=initial_delivery.envelope.delivery_id
+                    turn_id, message.to_items(), delivery_id=initial_delivery.envelope.delivery_id
                 )
             if callable(getattr(node_store, "create_node", None)):
                 if getattr(conversation, "active_session", None) is None:

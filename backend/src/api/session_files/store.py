@@ -646,9 +646,30 @@ class SessionFileStore:
 
         references: list[dict[str, str]] = []
         seen: set[tuple[str, str]] = set()
+        image_paths = {
+            value.get("path")
+            for value in values
+            if isinstance(value.get("path"), str) and value["path"].startswith("asset:")
+        }
+        if len(image_paths) > 4:
+            raise SessionFileError("每条消息最多 4 张图片。")
         for value in values:
             source = value.get("source")
             path = value.get("path")
+            if isinstance(path, str) and path.startswith("asset:"):
+                from backend.storage.assets import AssetError, ImageAssetStore
+                from backend.storage.sqlite import SQLiteSessionStore
+
+                if source != "upload":
+                    raise SessionFileError("Invalid image reference source.")
+                try:
+                    image = ImageAssetStore(SQLiteSessionStore(self._paths), self._session_id).pin([path[6:]])[0]
+                except AssetError as exc:
+                    raise SessionFileError(str(exc)) from exc
+                if ("upload", path) not in seen:
+                    references.append(image.to_reference())
+                    seen.add(("upload", path))
+                continue
             if source not in FILE_SOURCES or not isinstance(path, str) or not path:
                 raise SessionFileNotFound("无效的文件引用。")
             resolved = self.resolve(str(source), path)

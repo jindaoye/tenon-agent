@@ -198,11 +198,25 @@ class AgentRunner:
             provider_config_resolver=self.provider_config_resolver,
             job_scope=self.job_scope,
         )
+        if runtime_store is not None and hasattr(runtime_store, "paths"):
+            from backend.storage.assets import ImageAssetStore
+
+            services.image_loader = ImageAssetStore(runtime_store, session_id).read
+            services.image_metadata = ImageAssetStore(runtime_store, session_id).get
         return AgentRuntime(state=state, services=services)
 
     def bind(self, runtime: AgentRuntime) -> AgentRuntime:
         """Rebind non-serializable services after loading a persisted RuntimeState."""
 
+        if runtime.services.runtime_store is not None and hasattr(runtime.services.runtime_store, "paths"):
+            from backend.storage.assets import ImageAssetStore
+
+            runtime.services.image_loader = ImageAssetStore(
+                runtime.services.runtime_store, runtime.state.session_id
+            ).read
+            runtime.services.image_metadata = ImageAssetStore(
+                runtime.services.runtime_store, runtime.state.session_id
+            ).get
         runtime.services.planner = self.planner
         runtime.services.tools = self.tools
         runtime.services.todo_store = self.todo_store

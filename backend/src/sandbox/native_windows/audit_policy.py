@@ -32,7 +32,7 @@ _REGISTRY = "0cce921e-69ae-11d9-bed3-505054503030"
 
 
 @contextmanager
-def security_privilege():
+def security_privilege(privilege_name: str = "SeSecurityPrivilege"):
     import win32api
     import win32event
     import win32security
@@ -49,10 +49,10 @@ def security_privilege():
         token = win32security.OpenProcessToken(
             win32api.GetCurrentProcess(), win32security.TOKEN_ADJUST_PRIVILEGES | win32security.TOKEN_QUERY
         )
-        privilege = win32security.LookupPrivilegeValue(None, "SeSecurityPrivilege")
+        privilege = win32security.LookupPrivilegeValue(None, privilege_name)
         previous = win32security.AdjustTokenPrivileges(token, False, [(privilege, win32security.SE_PRIVILEGE_ENABLED)])
         if win32api.GetLastError():
-            raise SandboxAuditUnavailable("Windows permission auditing requires SeSecurityPrivilege.")
+            raise SandboxAuditUnavailable(f"Windows permission auditing requires {privilege_name}.")
         yield
     finally:
         if previous is not None:
@@ -151,7 +151,12 @@ class WindowsAuditPolicy:
     def _ensure_user_policy(self, sid) -> None:
         guids = (_Guid * 2)(_Guid.parse(_FILE_SYSTEM), _Guid.parse(_REGISTRY))
         existing = ctypes.POINTER(_Policy)()
-        self._check(self.api.AuditQueryPerUserPolicy(sid, guids, 2, ctypes.byref(existing)))
+        found = self.api.AuditQueryPerUserPolicy(sid, guids, 2, ctypes.byref(existing))
+        # Windows reports ERROR_FILE_NOT_FOUND when the account has no per-user
+        # policy yet. Initialize that policy instead of rejecting a fresh setup.
+        # Access failures and other query errors must still fail closed.
+        if not found and ctypes.get_last_error() != 2:
+            self._check(found)
         try:
             updated = (_Policy * 2)()
             changed = False
@@ -164,7 +169,8 @@ class WindowsAuditPolicy:
             if changed:
                 self._check(self.api.AuditSetPerUserPolicy(sid, updated, 2))
         finally:
-            self.api.AuditFree(existing)
+            if existing:
+                self.api.AuditFree(existing)
 
     def _ensure_system_policy(self) -> None:
         guids = (_Guid * 6)(
@@ -197,7 +203,10 @@ class WindowsAuditPolicy:
 
     def _ensure_global_sacl(self, object_type: str, sid, mask: int) -> None:
         pointer = ctypes.c_void_p()
-        self._check(self.api.AuditQueryGlobalSaclW(object_type, ctypes.byref(pointer)))
+        found = self.api.AuditQueryGlobalSaclW(object_type, ctypes.byref(pointer))
+        # A machine may not have a global SACL for this object type yet.
+        if not found and ctypes.get_last_error() != 2:
+            self._check(found)
         try:
             old = (
                 ctypes.string_at(pointer, ctypes.c_ushort.from_address(pointer.value + 2).value)

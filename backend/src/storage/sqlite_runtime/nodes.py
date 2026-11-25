@@ -426,7 +426,7 @@ class SQLiteNodeMixin:
     def append_turn_version(
         self,
         turn_id: str,
-        user_item: Mapping[str, object],
+        user_item: Mapping[str, object] | list[dict[str, object]],
         *,
         delivery_id: str | None = None,
     ) -> TreeRuntimeState:
@@ -435,7 +435,9 @@ class SQLiteNodeMixin:
         node = _require_runtime_turn(self.find_node(turn_id), turn_id)
         if node.status == "running":
             raise ValueError("A running Turn cannot be rewound.")
-        user = message_payload("user", [dict(user_item)], delivery_id=delivery_id)
+        user = message_payload(
+            "user", user_item if isinstance(user_item, list) else [dict(user_item)], delivery_id=delivery_id
+        )
         assistant = message_payload("assistant", [])
         with self._connection(node.session_id, write=True) as connection:
             self._assert_writable(connection)

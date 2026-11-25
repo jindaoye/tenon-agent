@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal, TypeAlias
 
+from .images import ImageReference
+
 MessageRole = Literal["system", "user", "assistant", "tool", "developer"]
 ToolStatus = Literal["pending", "succeeded", "failed", "indeterminate"]
 
@@ -41,6 +43,7 @@ class SystemMessage(Message):
 
 @dataclass(kw_only=True)
 class UserMessage(Message):
+    images: tuple[ImageReference, ...] = ()
     name: str = "user"
     role: Literal["user"] = field(default="user", init=False)
     content: str | None = None
@@ -167,6 +170,8 @@ def message_to_dict(message: ChatMessage) -> dict[str, Any]:
         "content": message.content,
         "provider_options": message.provider_options,
     }
+    if isinstance(message, UserMessage) and message.images:
+        payload["images"] = [image.to_item() for image in message.images]
     if isinstance(message, AssistantMessage):
         payload.update(
             reasoning=message.reasoning,
@@ -196,6 +201,12 @@ def message_from_dict(data: dict[str, Any]) -> ChatMessage:
         )
     if role == "user":
         return UserMessage(
+            images=tuple(
+                ImageReference(
+                    item["asset_id"], item.get("filename", "image"), item.get("width", 0), item.get("height", 0)
+                )
+                for item in data.get("images", [])
+            ),
             name=str(data.get("name") or "user"),
             content=text,
             provider_options=_provider_options_from_dict(data),

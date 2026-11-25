@@ -182,6 +182,22 @@ class RuntimeStateTree:
         items = [item for item in self._items(path[starts[-1] :]) if item.get("type") != "todo_snapshot"]
         kept = items[-source.first_kept_item_size :] if source.first_kept_item_size else []
         compact_items = [compaction_payload(summary, kept_items=kept)]
+        # Keep immutable image references across checkpoints, including earlier
+        # checkpoints. The active user message is already copied below.
+        active_images = {item["asset_id"] for item in source.user_message["content"] if item.get("type") == "image"}
+        images = {}
+        for item in items:
+            for image in (
+                [item]
+                if item.get("type") == "image"
+                else item.get("images", [])
+                if item.get("type") == "compaction"
+                else []
+            ):
+                if image["asset_id"] not in active_images:
+                    images[image["asset_id"]] = _clone(image)
+        if images:
+            compact_items[0]["images"] = list(images.values())
         if todo_snapshot is not None:
             compact_items.append(_clone(todo_snapshot))
         compact_items.extend(kept)

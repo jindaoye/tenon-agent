@@ -266,6 +266,15 @@ class RequestMixin:
         )
 
     def _summarize_history(self, runtime: AgentRuntime, transcript: str) -> str:
+        from backend.domain.images import ImageReference
+
+        images = {
+            item["asset_id"]: ImageReference(
+                item["asset_id"], item.get("filename", "image"), item.get("width", 0), item.get("height", 0)
+            )
+            for message in json.loads(transcript)
+            for item in message.get("images", [])
+        }
         previous_usage = runtime.state.turn_usage
         previous_on_reasoning = runtime.exchange.on_reasoning
         previous_on_reasoning_summary = runtime.exchange.on_reasoning_summary
@@ -287,7 +296,7 @@ class RequestMixin:
                         self._with_user_preferences(SystemMessage(content=COMPACTION_INSTRUCTION)),
                         operation="summarize",
                     ),
-                    UserMessage(content=transcript),
+                    UserMessage(content=transcript, images=tuple(images.values())),
                 ],
                 operation="summarize",
                 output_mode="text",

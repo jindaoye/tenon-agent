@@ -268,7 +268,12 @@ export function projectTurnPath(nodes: Map<string, RuntimeTreeNode>, activeTurnI
           events: [],
           nodeId: turn.id,
           sourceNodeId: turn.parent_id || undefined,
-          references: userItem ? references(userItem) : undefined,
+          references: [
+            ...(userItem ? references(userItem) ?? [] : []),
+            ...message.content.filter((item) => item.type === "image" && typeof item.asset_id === "string")
+              .map((item): FileReference => ({ source: "upload", path: `asset:${item.asset_id}`,
+                display_path: typeof item.filename === "string" ? item.filename : "image" })),
+          ],
           timelineSource: typeof message.delivery_id === "string" ? "steering" : "user",
           deliveryId: typeof message.delivery_id === "string" ? message.delivery_id : undefined,
         });

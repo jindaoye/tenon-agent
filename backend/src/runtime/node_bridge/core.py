@@ -258,7 +258,7 @@ class RuntimeEventNodeBridge(
             thread_id=self.thread_id,
             id=self.turn_id,
             parent=self.parent,
-            user_content=[user_item],
+            user_content=self.input_message.to_items() if self.input_message is not None else [user_item],
             user=self.user,
             provider_name=self.provider_name,
             model=self.model_config,
@@ -367,10 +367,8 @@ class RuntimeEventNodeBridge(
         if self.assistant is None:
             self.start()
         assert self.assistant is not None
-        item: dict[str, Any] = {"type": "text", "text": content, "status": "success"}
-        if isinstance(references, list) and references:
-            item["references"] = self._json_value(references)
-        message: dict[str, Any] = {"role": "user", "content": [item]}
+        input_message = InputMessage.from_input(content, references if isinstance(references, list) else [])
+        message: dict[str, Any] = {"role": "user", "content": input_message.to_items()}
         delivery_id = str(data.get("delivery_id") or "")
         if delivery_id:
             selected = self.assistant.data[self.assistant.current_data_idx]
@@ -381,7 +379,8 @@ class RuntimeEventNodeBridge(
         self.assistant = self.writer.append_message(self.assistant, message, persist=True)
         self.last_node = self.assistant
         message_idx = len(self.assistant.data[self.assistant.current_data_idx]) - 1
-        self._record_completed_item(message_idx, 0)
+        for item_idx in range(len(message["content"])):
+            self._record_completed_item(message_idx, item_idx)
         self.assistant_blocks = []
         self.assistant_message_idx = None
 

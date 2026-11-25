@@ -6,7 +6,7 @@ import time
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
-from .audit_policy import SandboxAuditUnavailable, WindowsAuditPolicy
+from .audit_policy import SandboxAuditUnavailable, WindowsAuditPolicy, security_privilege
 from .network_audit import network_denial
 
 _NS = {"e": "http://schemas.microsoft.com/win/2004/08/events/event"}
@@ -141,19 +141,22 @@ class CommandAudit:
 
         process = token = None
         try:
-            process = win32api.OpenProcess(0x1000, False, process_id)
-            token = win32security.OpenProcessToken(process, win32security.TOKEN_QUERY)
-            user, _ = win32security.GetTokenInformation(token, win32security.TokenUser)
-            groups = win32security.GetTokenInformation(token, win32security.TokenGroups)
-            if win32security.ConvertSidToStringSid(user) != self.account_sid or not any(
-                win32security.ConvertSidToStringSid(sid) == logon_sid for sid, _ in groups
-            ):
-                raise SandboxAuditUnavailable("Command token does not match its Broker reservation.")
-            # LUA_TOKEN can create a new AuthenticationId while retaining the original logon SID.
-            self.logon_id = int(
-                win32security.GetTokenInformation(token, win32security.TokenStatistics)["AuthenticationId"]
-            )
-            self.root_pid = process_id
+            # Broker processes run as another account with a restrictive DACL.
+            # Enable the privilege only while querying and verifying identities.
+            with security_privilege("SeDebugPrivilege"):
+                process = win32api.OpenProcess(0x1000, False, process_id)
+                token = win32security.OpenProcessToken(process, win32security.TOKEN_QUERY)
+                user, _ = win32security.GetTokenInformation(token, win32security.TokenUser)
+                groups = win32security.GetTokenInformation(token, win32security.TokenGroups)
+                if win32security.ConvertSidToStringSid(user) != self.account_sid or not any(
+                    win32security.ConvertSidToStringSid(sid) == logon_sid for sid, _ in groups
+                ):
+                    raise SandboxAuditUnavailable("Command token does not match its Broker reservation.")
+                # LUA_TOKEN can create a new AuthenticationId while retaining the original logon SID.
+                self.logon_id = int(
+                    win32security.GetTokenInformation(token, win32security.TokenStatistics)["AuthenticationId"]
+                )
+                self.root_pid = process_id
         except Exception as exc:
             raise SandboxAuditUnavailable("Cannot verify the command process audit identity.") from exc
         finally:

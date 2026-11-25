@@ -39,6 +39,7 @@ DEFAULT_PROVIDER_CONFIG: dict[str, object] = {
     "temperature": 0.0,
     "tokenizer_model": "",
     "api_key_configured": False,
+    "supports_images": False,
 }
 DEFAULT_CAPABILITY_CONFIG: dict[str, object] = {"skills": True, "mcp": False}
 DEFAULT_SKILL_CONFIG: dict[str, object] = {"disabled": []}
@@ -252,6 +253,7 @@ def normalize_provider_config(current: Mapping[str, object], values: Mapping[str
         "context_size": context_size,
         "temperature": temperature,
         "tokenizer_model": tokenizer_model,
+        "supports_images": values.get("supports_images", current.get("supports_images", False)) is True,
     }
 
 

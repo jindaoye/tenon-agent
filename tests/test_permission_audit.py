@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import sys
 import xml.etree.ElementTree as ET
+from contextlib import contextmanager
+from types import SimpleNamespace
 
 import pytest
 
+from backend.sandbox.native_windows import permission_audit
 from backend.sandbox.native_windows.audit_policy import SandboxAuditUnavailable
 from backend.sandbox.native_windows.permission_audit import CommandAudit, permission_denial
 
@@ -104,3 +108,62 @@ def test_missing_audit_completion_or_checkpoint_fails_closed(overwritten):
     scope = CommandAudit(Source(), SID, LOGON, 10, root_pid=123, start_time="original" if overwritten else None)
     with pytest.raises(SandboxAuditUnavailable):
         scope.collect(timeout=0)
+
+
+@pytest.mark.parametrize("identity", ["valid", "other-account", "other-logon"])
+def test_binding_queries_with_scoped_privilege_and_checks_broker_identity(monkeypatch, identity):
+    state = {"privileged": False}
+    closed = []
+
+    class Handle:
+        def __init__(self, kind):
+            self.kind = kind
+
+        def Close(self):
+            closed.append(self.kind)
+
+    @contextmanager
+    def privilege(name):
+        assert name == "SeDebugPrivilege"
+        state["privileged"] = True
+        try:
+            yield
+        finally:
+            state["privileged"] = False
+
+    def open_process(access, inherit, pid):
+        assert state["privileged"]
+        assert (access, inherit, pid) == (0x1000, False, 123)
+        return Handle("process")
+
+    logon_sid = "S-1-5-5-1-2"
+    info = {
+        1: (SID if identity != "other-account" else "S-1-5-21-999", 0),
+        2: [(logon_sid if identity != "other-logon" else "S-1-5-5-9-9", 0)],
+        3: {"AuthenticationId": LOGON},
+    }
+    monkeypatch.setitem(sys.modules, "win32api", SimpleNamespace(OpenProcess=open_process))
+    monkeypatch.setitem(
+        sys.modules,
+        "win32security",
+        SimpleNamespace(
+            TOKEN_QUERY=8,
+            TokenUser=1,
+            TokenGroups=2,
+            TokenStatistics=3,
+            OpenProcessToken=lambda _process, _access: Handle("token"),
+            GetTokenInformation=lambda _token, kind: info[kind],
+            ConvertSidToStringSid=str,
+        ),
+    )
+    monkeypatch.setattr(permission_audit, "security_privilege", privilege)
+    audit = CommandAudit(None, SID, 0, 10)
+    if identity == "valid":
+        audit.bind_process(123, logon_sid)
+        assert (audit.root_pid, audit.logon_id) == (123, LOGON)
+    else:
+        with pytest.raises(SandboxAuditUnavailable):
+            audit.bind_process(123, logon_sid)
+        assert audit.root_pid == 0
+    assert not state["privileged"]
+    assert closed == ["token", "process"]
